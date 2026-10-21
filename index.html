@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Governors and data centers</title>
+ 
+        <style>
+ 
+            main {
+                font-size: 18px;
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                line-height: 20px;
+            }
+
+            #main-header {
+                line-height: 44px;
+                text-align: center;
+
+            }
+ 
+            #results-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 50px;
+            }
+ 
+            .candidate-portrait {
+                display: block;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-left: auto;
+                margin-right: auto;
+            }
+ 
+            .candidate-name {
+                font-weight: 600;
+                margin-left: auto;
+                margin-right: auto;
+            }
+ 
+ 
+            #results-container p {
+                padding: 0 15px;
+            }
+ 
+            #results-container h2 {
+                padding: 0 15px;
+                line-height: 28px;
+            }
+ 
+            .text-in-light-bold {
+                font-weight: 700;
+            }
+
+            .candidate-divider {
+                width: 80%;
+                margin: 16px;
+                border: none;
+                border-top: 1px solid gray;
+            }
+
+            .candidate-questions .question-stem {
+                margin: 0 0 25px 0;
+                padding: 0 15px;
+                font-weight: 400;
+                line-height: 24px;
+            }
+ 
+ /*
+            .yes-answer {
+                text-decoration: underline;
+                text-decoration-color: #45ba87;
+                text-decoration-thickness: 2.4px;
+            }
+ 
+            .no-answer {
+                text-decoration: underline;
+                text-decoration-color: #EB4C04;
+                text-decoration-thickness: 2.4px;
+            }
+ 
+            .no-response {
+                text-decoration: underline;
+                text-decoration-color: #bfacc8;
+                text-decoration-thickness: 2.4px;
+            }
+
+            */
+
+            /* #ffeb3b */
+
+            .different-answer {
+                background-color: #FFE3A3; 
+                color: #000000;
+                padding: 0 4px;
+                border-radius: 3px; }
+
+         
+ 
+            .text-in-italics {
+                font-style: italic;
+                font-size: 16px;
+            }
+ 
+            .candidate-questions {
+                padding-top: 3px;
+            }
+ 
+            .candidate-questions p {
+                line-height: 24px;
+            }
+ 
+            .not-first-candidate-div {
+                border-left: 1px solid gray;
+            }
+
+            .candidate-questions ul {
+                margin: 0;
+                padding: 0 15px 0 40px;
+                line-height: 24px;
+            }
+
+            .candidate-questions li {
+                margin-bottom: 12px;
+            }
+
+
+            .text-in-italics a {
+                text-decoration: underline;
+                color: black;
+                text-decoration-color: #bfacc8;
+                text-decoration-thickness: 2.4px;
+                cursor: pointer;
+            }
+
+            .text-in-italics a:hover {
+                color: #bfacc8;
+            }
+
+            #credits-and-methodology p {
+              font-size: 16px;
+              line-height: 22px;
+            }
+
+            #credits-and-methodology li {
+              font-size: 16px;
+              line-height: 22px;
+            }
+ 
+ 
+            @media (max-width: 720px) {
+                #results-container {
+                display: block;
+            }
+ 
+                .not-first-candidate-div {
+                border-left: 1px none gray;
+                border-top: 1px solid gray;
+                padding-top: 25px;
+            }
+
+                .candidate-card {
+                min-width: 0;
+                max-width: none;
+            }
+            }
+ 
+            /* ---- New elements: dropdown and "read more" ---- */
+ 
+            #state-picker {
+                margin-top: 30px;
+                text-align: center;
+            }
+ 
+            #state-picker label {
+                margin-right: 8px;
+            }
+
+            /* #bfacc8 */
+ 
+            #state-select {
+                font-family: inherit;
+                font-size: 16px;
+                padding: 6px 10px;
+                border: 2px solid #bfacc8;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+ 
+            /* Limits the summary to 3 lines until expanded */
+            .summary.clamped {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                line-clamp: 3;
+                overflow: hidden;
+            }
+ 
+            .read-more-btn {
+                display: block;
+                padding: 0 15px;
+                margin-top: 4px;
+                background: none;
+                border: none;
+                font-family: inherit;
+                font-size: 16px;
+                text-decoration: underline;
+                text-decoration-color: #bfacc8;
+                text-decoration-thickness: 2.4px;
+                cursor: pointer;
+            }
+
+            .read-more-btn:hover {
+              color: #bfacc8;
+            }
+ 
+            /* Makes the hidden attribute win over display: block above */
+            .read-more-btn[hidden] {
+                display: none;
+            }
+
+            @media not all and (max-width: 720px) {
+                #results-container {
+                    display: grid;
+                    grid-template-columns: repeat(var(--candidate-count), minmax(250px, 450px));
+                    justify-content: center;
+                }
+
+                .candidate-card {
+                    display: grid;
+                    grid-template-rows: subgrid;
+                    grid-row: span var(--card-rows);
+                }
+
+                .candidate-questions {
+                    display: grid;
+                    grid-template-rows: subgrid;
+                    grid-row: span var(--question-rows);
+                }
+
+                .candidate-questions ul {
+                    display: grid;
+                    grid-template-rows: subgrid;
+                    grid-row: span var(--topic-count);
+                }
+            }
+ 
+        </style>
+    </head>
+ 
+    <body>
+        <main>
+
+            <h1 id="main-header">Where do your gubernatorial&nbsp;candidates stand&nbsp;on data&nbsp;center&nbsp;issues?</h1> 
+            
+            <!-- Dropdown menu -->
+            <div id="state-picker">
+                <label for="state-select">Choose a state:</label>
+                <select id="state-select"></select>
+            </div>
+ 
+            <!-- Side by side: candidates are built by the script below -->
+            <div id="results-container"></div>
+
+            <br>
+            <div id="credits-and-methodology">
+                <p style="font-style: italic;">Issues that candidates do not agree on are <span class="different-answer">highlighted in yellow.</span>
+                <p>Are you one of the candidates we mention? If we could not find your stance on data centers online or over email, 
+                  you can reach out to Mark Horvit at 
+                  <span style="text-decoration: underline; text-decoration-color: #bfacc8; text-decoration-thickness: 2.4px;">
+                    horvitm@missouri.edu</span> to make your position heard.</p>
+                <p>Data visualization by Mariia Novoselia / Missouri News Network</p>
+                <br>
+
+                <div style="padding: 20px; border: 22px solid #bfacc8; border-radius: 4px;" >
+                    <h3>Methodology</h3>
+                    <p>The Statehouse Reporting Project identified candidates for this project by including those polling 15 percent or 
+                        more in national polling data for the 36 gubernatorial races. Reporters used candidate campaign websites, 
+                        press releases, debates, news articles, campaign ads, votes on legislation, governor’s websites and public 
+                        comments to research and evaluate the positions of candidates on data centers. We cite the sources used in 
+                        these evaluations for transparency and accountability.</p>
+                    
+                    <p>Each candidate was evaluated on five questions: 
+                        <ol>
+                            <li>Does this candidate support a state-wide moratorium?</li>
+                            <li>Does this candidate support public reporting requirements for water use? </li>
+                            <li>Does this candidate support separate utility rates and use requirements for data centers?</li>
+                            <li>Does this candidate support noise assessment requirements for proposed data centers?</li>
+                            <li>Does this candidate support tax incentives for data centers?</li>
+                        </ol>
+                    </p>
+
+                    <p>Reporters made multiple attempts to reach candidates and their campaign offices via email for responses. 
+                        Campaigns were notified of each stance recorded for their candidate.</p>
+                </div>
+            </div>
+ 
+        </main>
+ 
+        <script>
+            // ------------------------------------------------------------
+            // CONFIG
+            // ------------------------------------------------------------
+            const DATA_URL = 'data/data.json';
+
+            // One entry per topic. "answer" and "link" must match your column
+            // headers exactly (leading/trailing spaces are ignored).
+            // Replace the placeholder question text with your real questions.
+            const TOPICS = [
+                { answer: 'water',      link: 'water_link',      question: 'public reporting requirements for water use?' },
+                { answer: 'power',      link: 'power_link',      question: 'separate utility rates and use requirements for data centers?' },
+                { answer: 'moratorium', link: 'moratorium_link',  question: 'a statewide moratorium on data centers?' },
+                { answer: 'tax_breaks', link: 'tax_breaks_link',        question: 'tax incentives for data centers?' },
+                { answer: 'zoning',     link: 'zoning_link',     question: 'noise assessment requirements for proposed data centers?' }
+            ];
+            const QUESTION_STEM = 'Does this candidate support...';
+ 
+            const PHOTOS = {
+                dem: 'img/dem_placeholder.png',
+                rep: 'img/rep_placeholder.png',
+                ind: 'img/independent_placeholder.png'
+            };
+ 
+            // ------------------------------------------------------------
+            // HELPERS
+            // ------------------------------------------------------------
+            const container = document.getElementById('results-container');
+            const select = document.getElementById('state-select');
+            let rows = [];
+ 
+            // Builds an element. Text is set with textContent, so nothing in
+            // the data can inject HTML into the page.
+            function el(tag, className, text) {
+                const node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text !== undefined) node.textContent = text;
+                return node;
+            }
+ 
+            // Trims header names and values; turns null/undefined into ''.
+            function cleanRow(raw) {
+                const out = {};
+                Object.keys(raw).forEach(key => {
+                    const val = raw[key];
+                    out[key.trim()] = (val === null || val === undefined) ? '' : String(val).trim();
+                });
+                return out;
+            }
+ 
+            function photoFor(party) {
+                const p = party.toLowerCase();
+                if (p.includes('democrat')) return PHOTOS.dem;
+                if (p.includes('republican')) return PHOTOS.rep;
+                return PHOTOS.ind;
+            }
+ 
+            function answerClass(answer) {
+                const a = answer.toLowerCase();
+                if (a === 'yes') return 'yes-answer';
+                if (a === 'no') return 'no-answer';
+                if (a === 'did not respond') return 'no-response';
+                return null;
+            }
+
+            // Returns a Set of topic answer-columns where candidates in this state disagree
+            function findDifferingTopics(matches) {
+                const differing = new Set();
+                TOPICS.forEach(topic => {
+                    const answers = new Set(
+                        matches.map(r => (r[topic.answer] || '').replace(/\.$/, '').toLowerCase())
+                    );
+                    if (answers.size > 1) differing.add(topic.answer);
+                });
+                return differing;
+            }
+ 
+            // Source logic:
+            //   link          -> (Source) with "Source" hyperlinked
+            //   other text    -> (Source: <text>)
+            //   empty         -> nothing
+            function buildSource(value) {
+                if (!value) return null;
+                const span = el('span', 'text-in-italics');
+                if (/^https?:\/\//i.test(value)) {
+                    const a = el('a', '', 'Source');
+                    a.href = value;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    span.append('(', a, ')');
+                } else {
+                    span.textContent = '(Source: ' + value + ')';
+                }
+                return span;
+            }
+ 
+            function buildQuestions(row, who, differing) {
+                const wrap = el('div', 'candidate-questions');
+                wrap.append(el('h4', 'question-stem', QUESTION_STEM));
+
+                const list = el('ul');
+                TOPICS.forEach(topic => {
+                    const answer = (row[topic.answer] || '').replace(/\.$/, '');
+                    const cls = answerClass(answer);
+                    if (!cls) {
+                        console.warn('Unexpected or missing answer for ' + who + ' / ' + topic.answer + ': "' + answer + '"');
+                        return;
+                    }
+                    const diffClass = differing.has(topic.answer) ? ' different-answer' : '';
+                    const li = el('li');
+                    li.append(topic.question + ' ');
+                    li.append(el('span', 'text-in-light-bold ' + cls + diffClass, answer.replace(/ /g, '\u00A0') + '.'));
+
+                    const source = buildSource(row[topic.link] || '');
+                    if (source) {
+                        li.append(' ', source);
+                    }
+                    list.append(li);
+                });
+
+                wrap.append(list);
+                return wrap;
+            }
+ 
+            function buildSummary(text) {
+                const wrap = el('div', 'summary-block');
+                const p = el('p', 'summary clamped', text);
+                const btn = el('button', 'read-more-btn', 'Read more');
+                btn.type = 'button';
+                btn.hidden = true; // shown only if the text is actually cut off
+                btn.setAttribute('aria-expanded', 'false');
+ 
+                btn.addEventListener('click', () => {
+                    const expanded = p.classList.toggle('clamped') === false;
+                    btn.textContent = expanded ? 'Read less' : 'Read more';
+                    btn.setAttribute('aria-expanded', String(expanded));
+                });
+ 
+                wrap.append(p, btn);
+                return wrap;
+            }
+ 
+            // Shows the button only for summaries that overflow 3 lines.
+            // Expanded summaries keep their button so they can be collapsed.
+            function updateReadMoreButtons() {
+                container.querySelectorAll('.summary').forEach(p => {
+                    const btn = p.nextElementSibling;
+                    if (!btn) return;
+                    if (p.classList.contains('clamped')) {
+                        btn.hidden = p.scrollHeight <= p.clientHeight + 1;
+                    }
+                });
+            }
+ 
+            function renderState(stateName) {
+                container.replaceChildren();
+ 
+                const matches = rows.filter(r => r.state === stateName);
+                const differing = findDifferingTopics(matches);
+
+                container.style.setProperty('--candidate-count', matches.length);
+                container.style.setProperty('--topic-count', TOPICS.length);
+                container.style.setProperty('--question-rows', TOPICS.length + 1);
+                container.style.setProperty('--card-rows', TOPICS.length + 6);
+
+                matches.forEach((row, i) => {
+                    const card = el('div', i > 0 ? 'candidate-card not-first-candidate-div' : 'candidate-card');
+ 
+                    const img = el('img', 'candidate-portrait');
+                    img.src = photoFor(row.party || '');
+                    img.alt = '';
+ 
+                    const party = el('p');
+                    party.append('Political party: ', el('span', 'text-in-light-bold', row.party || ''));
+ 
+                    card.append(
+                        img,
+                        el('h2', 'candidate-name', row.name || ''),
+                        party,
+                        buildSummary(row.summary || ''),
+                        el('hr', 'candidate-divider'),
+                        buildQuestions(row, row.name || 'unknown candidate', differing)
+                    );
+                    container.append(card);
+                });
+ 
+                updateReadMoreButtons();
+            }
+ 
+            // ------------------------------------------------------------
+            // LOAD DATA + START
+            // ------------------------------------------------------------
+            fetch(DATA_URL)
+                  .then(response => {
+                      if (!response.ok) throw new Error('HTTP ' + response.status);
+                      return response.json();
+                  })
+                  .then(json => {
+                    // Carry the state down in case any state cells came through blank
+                    let lastState = '';
+                    rows = json.map(cleanRow).map(r => {
+                        if (r.state) lastState = r.state; else r.state = lastState;
+                        return r;
+                    });
+ 
+                    // Unique states, in the order they appear in the data
+                    const states = [...new Set(rows.map(r => r.state))].filter(Boolean);
+ 
+                    states.forEach(s => select.append(new Option(s, s)));
+                    select.value = states[0]; // first state preselected (Alabama)
+                    select.addEventListener('change', () => renderState(select.value));
+                    renderState(states[0]);
+ 
+                    window.addEventListener('resize', updateReadMoreButtons);
+                    if (document.fonts && document.fonts.ready) {
+                        document.fonts.ready.then(updateReadMoreButtons);
+                    }
+                })
+                .catch(err => {
+                    console.error('Could not load ' + DATA_URL, err);
+                    container.textContent = 'An error has occurred. The data could not be loaded.';
+                });
+        </script>
+ 
+    </body>
+</html>
+ 
