@@ -7,6 +7,10 @@
  
         <style>
  
+            body { 
+                margin: 0; 
+            }
+            
             main {
                 font-size: 18px;
                 font-family: Georgia, 'Times New Roman', Times, serif;
@@ -555,6 +559,14 @@
                     console.error('Could not load ' + DATA_URL, err);
                     container.textContent = 'An error has occurred. The data could not be loaded.';
                 });
+            function sendHeight() {
+                parent.postMessage(
+                    { type: 'embed-height', height: document.body.offsetHeight },
+                    '*'
+                );
+            }
+            new ResizeObserver(sendHeight).observe(document.body);
+            
         </script>
  
     </body>
