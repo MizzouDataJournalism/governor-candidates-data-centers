@@ -1,0 +1,90 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+```
+
+```{r}
+data <- fromJSON("data/data.json")
+```
+
+```{r}
+
+moratorium <- data |> select(name, party, moratorium) |> 
+  count(moratorium, party) |> 
+  arrange(desc(moratorium))
+
+water <- data |> select(name, party, water) |> 
+  count(water, party) |> 
+  arrange(desc(water)) 
+
+power <- data |> select(name, party, power) |> 
+  count(power, party) |> 
+  arrange(desc(power)) 
+
+zoning <- data |> select(name, party, zoning) |> 
+  count(zoning, party) |> 
+  arrange(desc(zoning)) 
+
+tax_breaks <- data |> select(name, party, tax_breaks) |> 
+  count(tax_breaks, party) |> 
+  arrange(desc(tax_breaks)) 
+
+```
+
+
+Extra analysis: 
+```{r}
+# Moratoriums
+
+# What did New York candidates say on moratoriums?
+
+data |> filter(state == "New York") |> 
+  select(state, name, party, moratorium)
+
+
+# What did candidates in states with introduced moratoriums say? (states where moratoriums have been introduced and not vetoed or failed, as of Sept. 15, https://www.ncsl.org/fiscal/which-states-are-banning-data-centers)
+
+data |> filter(state %in% c("Delaware", "Georgia", "Michigan", 
+                            "New Jersey", "Pennsylvania", 
+                            "South Carolina", "Vermont", "Virginia")) |> 
+  select(state, name, party, moratorium)
+
+
+# Power
+
+# Who said no on the power issue?
+
+data |> filter(power == "No") |> 
+  select(state, name, party, power)
+
+
+# Zoning
+
+# Who did not support noise assessments?
+
+data |> filter(zoning == "No") |> 
+  select(state, name, party, zoning)
+
+
+# Tax incentives
+
+# Who supported tax incentives for data centers?
+
+data |> filter(tax_breaks == "Yes")
+
+# What about states that do not currently offer tax incentives? (according to NCSL, https://www.ncsl.org/fiscal/subsidizing-servers-how-states-are-competing-to-attract-data-centers)
+
+data |> filter(tax_breaks == "Yes") |> 
+  filter(state %in% c("Colorado", "New Mexico", "Oregon", 
+                      "California", "Alaska", "Hawaii", 
+                      "Nebraska", "South Dakota", "Rhode Island", 
+                      "Vermont", "New Hampshire", "Maine"))
+
+
+```
+
